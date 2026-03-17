@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BATON MOTOR | Product Detail</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-badge">B</span> BATON MOTOR</div>
+      <nav class="nav-links">
+        <a data-nav href="index.html">Home</a>
+        <a data-nav href="login.html">Login</a>
+        <a data-nav href="product.html">Product</a>
+        <a data-nav href="product-detail.html">Product Detail</a>
+        <a data-nav href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+        <a data-nav href="checkout.html">Checkout</a>
+        <a data-nav href="review.html">Review</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="headline">Product Detail</h1>
+
+    <section class="two-col">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1400&q=80" alt="Tesla Model 3">
+        <div class="card-body">
+          <h2>Tesla Model 3 2024</h2>
+          <p class="sub">Electric performance sedan with clean design and advanced autopilot features.</p>
+          <p class="price">$45,000</p>
+          <div class="row">
+            <span class="rating">★★★★★</span>
+            <small class="sub">4.5 / 5 from 24 reviews</small>
+          </div>
+          <br>
+          <button class="btn btn-main" data-add-cart-id="2" type="button">Add to Cart</button>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-body">
+          <h3>Specs</h3>
+          <table class="table">
+            <tr><th>Brand</th><td>Tesla</td></tr>
+            <tr><th>Category</th><td>Electric</td></tr>
+            <tr><th>Year</th><td>2024</td></tr>
+            <tr><th>Range</th><td>333 miles</td></tr>
+          </table>
+          <h3>Customer Reviews</h3>
+          <p class="sub">John: Good car</p>
+          <p class="sub">Anna: Amazing</p>
+          <a class="btn" href="review.html">Write review</a>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="foot">BATON MOTOR Product Detail Page</footer>
+  <script src="js/site.js"></script>
+</body>
+</html>

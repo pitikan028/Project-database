@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BATON MOTOR | Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-badge">B</span> BATON MOTOR</div>
+      <nav class="nav-links">
+        <a data-nav href="index.html">Home</a>
+        <a data-nav href="login.html">Login</a>
+        <a data-nav href="product.html">Product</a>
+        <a data-nav href="product-detail.html">Product Detail</a>
+        <a data-nav href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+        <a data-nav href="checkout.html">Checkout</a>
+        <a data-nav href="review.html">Review</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="headline">Login / Register</h1>
+    <p class="sub">เข้าสู่ระบบเพื่อสั่งซื้อสินค้า หรือสมัครสมาชิกใหม่</p>
+
+    <div class="two-col">
+      <section class="form-wrap">
+        <h2 class="section-title">Login</h2>
+        <input id="login-identifier" class="input" type="text" placeholder="Email or Username">
+        <input id="login-password" class="input" type="password" placeholder="Password">
+        <button id="login-btn" class="btn btn-main" type="button">Login</button>
+      </section>
+
+      <section class="form-wrap">
+        <h2 class="section-title">Register</h2>
+        <input id="register-fullname" class="input" type="text" placeholder="Full Name">
+        <input id="register-email" class="input" type="email" placeholder="Email">
+        <input id="register-username" class="input" type="text" placeholder="Username">
+        <input id="register-phone" class="input" type="text" placeholder="Phone">
+        <input id="register-password" class="input" type="password" placeholder="Password">
+        <button id="register-btn" class="btn btn-main" type="button">Register</button>
+      </section>
+    </div>
+  </main>
+
+  <footer class="foot">BATON MOTOR Login Page</footer>
+  <script src="js/site.js"></script>
+</body>
+</html>

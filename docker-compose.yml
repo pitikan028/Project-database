@@ -1,0 +1,51 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: baton-motor-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-db-1}
+      MYSQL_USER: ${DB_USERNAME:-baton_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-baton_pass}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql
+    networks:
+      - baton-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baton-motor-api
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_USERNAME: ${DB_USERNAME:-baton_user}
+      DB_PASSWORD: ${DB_PASSWORD:-baton_pass}
+      DB_NAME: ${DB_NAME:-db-1}
+      DB_PROJECT_NAME: ${DB_PROJECT_NAME:-project}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key}
+    ports:
+      - "3000:3000"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - baton-network
+    command: npm run start:prod
+
+volumes:
+  mysql_data:
+
+networks:
+  baton-network:
+    driver: bridge

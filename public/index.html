@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BATON MOTOR | Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-badge">B</span> BATON MOTOR</div>
+      <nav class="nav-links">
+        <a data-nav href="index.html">Home</a>
+        <a data-nav href="login.html">Login</a>
+        <a data-nav href="product.html">Product</a>
+        <a data-nav href="product-detail.html">Product Detail</a>
+        <a data-nav href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+        <a data-nav href="checkout.html">Checkout</a>
+        <a data-nav href="review.html">Review</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-content">
+        <div>
+          <h1 class="headline">Home</h1>
+          <p class="sub">Purple-pink showroom theme with real page navigation: Login, Product, Cart, Checkout, and Review.</p>
+          <div class="row">
+            <a class="btn btn-main" href="product.html">Explore Product</a>
+            <a class="btn" href="login.html">Login/Register</a>
+          </div>
+        </div>
+        <img src="https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=1500&q=80" alt="Hero car" style="width:100%;border-radius:16px;max-height:340px;object-fit:cover;">
+      </div>
+    </section>
+
+    <h2 class="section-title">Featured Cars</h2>
+    <section class="grid products">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1200&q=80" alt="BMW X5">
+        <div class="card-body">
+          <div class="row"><strong>BMW X5</strong><span class="price">$65,000</span></div>
+          <p class="sub">Luxury SUV - 2023</p>
+          <div class="row">
+            <a class="btn" href="product-detail.html">Details</a>
+            <button class="btn btn-main" data-add-cart-id="1" type="button">+ Add to cart</button>
+          </div>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1560958089-b8a1929cea89?auto=format&fit=crop&w=1200&q=80" alt="Tesla Model 3">
+        <div class="card-body">
+          <div class="row"><strong>Tesla Model 3</strong><span class="price">$45,000</span></div>
+          <p class="sub">Electric Sedan - 2024</p>
+          <div class="row">
+            <a class="btn" href="product-detail.html">Details</a>
+            <button class="btn btn-main" data-add-cart-id="2" type="button">+ Add to cart</button>
+          </div>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1200&q=80" alt="Porsche 911">
+        <div class="card-body">
+          <div class="row"><strong>Porsche 911 GT3</strong><span class="price">$185,000</span></div>
+          <p class="sub">Sport Coupe - 2024</p>
+          <div class="row">
+            <a class="btn" href="product-detail.html">Details</a>
+            <button class="btn btn-main" data-add-cart-id="3" type="button">+ Add to cart</button>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="foot">BATON MOTOR Home Page</footer>
+  <script src="js/site.js"></script>
+</body>
+</html>

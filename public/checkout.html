@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BATON MOTOR | Checkout</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="page">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand"><span class="brand-badge">B</span> BATON MOTOR</div>
+      <nav class="nav-links">
+        <a data-nav href="index.html">Home</a>
+        <a data-nav href="login.html">Login</a>
+        <a data-nav href="product.html">Product</a>
+        <a data-nav href="product-detail.html">Product Detail</a>
+        <a data-nav href="cart.html">Cart (<span data-cart-count>0</span>)</a>
+        <a data-nav href="checkout.html">Checkout</a>
+        <a data-nav href="review.html">Review</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <h1 class="headline">Checkout</h1>
+    <div class="two-col">
+      <section class="form-wrap">
+        <h2 class="section-title">Shipping Address</h2>
+        <input id="ship-street" class="input" type="text" placeholder="Street">
+        <input id="ship-city" class="input" type="text" placeholder="City">
+        <input id="ship-state" class="input" type="text" placeholder="State/Country">
+        <input id="ship-zip" class="input" type="text" placeholder="Zip Code">
+      </section>
+
+      <section class="form-wrap">
+        <h2 class="section-title">Order Summary</h2>
+        <p class="sub">Tesla Model 3 x1 - $45,000</p>
+        <p class="sub">BMW X5 x1 - $65,000</p>
+        <p><strong id="checkout-total">Order Total: $0</strong></p>
+        <label><input type="radio" name="pay" value="credit_card" checked> Credit Card</label><br>
+        <label><input type="radio" name="pay" value="bank_transfer"> Bank Transfer</label><br><br>
+        <button id="checkout-btn" class="btn btn-main" type="button">Confirm Order</button>
+      </section>
+    </div>
+  </main>
+
+  <footer class="foot">BATON MOTOR Checkout Page</footer>
+  <script src="js/site.js"></script>
+</body>
+</html>
