@@ -43,6 +43,13 @@ type CreateProductPayload = {
   isFeatured?: boolean;
 };
 
+type CreateReviewPayload = {
+  userId: number;
+  rating: number;
+  comment: string;
+  title?: string;
+};
+
 @Injectable()
 export class AppService {
   constructor(private readonly dataSource: DataSource) {}
@@ -74,6 +81,38 @@ export class AppService {
       ORDER BY p.is_featured DESC, p.created_at DESC
       `,
     );
+  }
+
+  async getProductById(productId: number) {
+    const rows = await this.dataSource.query(
+      `
+      SELECT
+        p.id,
+        p.sku,
+        p.name,
+        p.description,
+        p.price,
+        p.discount_price AS discountPrice,
+        p.quantity_in_stock AS quantityInStock,
+        p.image_url AS imageUrl,
+        p.thumbnail_url AS thumbnailUrl,
+        p.rating,
+        p.review_count AS reviewCount,
+        p.is_featured AS isFeatured,
+        c.name AS category
+      FROM products p
+      JOIN categories c ON c.id = p.category_id
+      WHERE p.id = ? AND p.is_active = 1
+      LIMIT 1
+      `,
+      [productId],
+    );
+
+    if (rows.length === 0) {
+      throw new BadRequestException('Product not found');
+    }
+
+    return rows[0];
   }
 
   async createProduct(payload: CreateProductPayload) {
@@ -145,6 +184,99 @@ export class AppService {
     );
 
     return created[0];
+  }
+
+  async getProductReviews(productId: number) {
+    return this.dataSource.query(
+      `
+      SELECT
+        r.id,
+        r.product_id AS productId,
+        r.user_id AS userId,
+        u.username,
+        r.rating,
+        r.title,
+        r.comment,
+        r.created_at AS createdAt
+      FROM reviews r
+      JOIN users u ON u.id = r.user_id
+      WHERE r.product_id = ?
+      ORDER BY r.created_at DESC
+      `,
+      [productId],
+    );
+  }
+
+  async getReviewsFeed() {
+    return this.dataSource.query(
+      `
+      SELECT
+        r.id,
+        r.product_id AS productId,
+        p.name AS productName,
+        u.username,
+        r.rating,
+        r.title,
+        r.comment,
+        r.created_at AS createdAt
+      FROM reviews r
+      JOIN users u ON u.id = r.user_id
+      JOIN products p ON p.id = r.product_id
+      ORDER BY r.created_at DESC
+      LIMIT 100
+      `,
+    );
+  }
+
+  async createReview(productId: number, payload: CreateReviewPayload) {
+    const rating = Number(payload.rating);
+    if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+      throw new BadRequestException('rating must be 1 to 5');
+    }
+
+    const comment = String(payload.comment || '').trim();
+    if (!comment) {
+      throw new BadRequestException('comment is required');
+    }
+
+    const product = await this.dataSource.query(
+      `SELECT id FROM products WHERE id = ? AND is_active = 1 LIMIT 1`,
+      [productId],
+    );
+    if (product.length === 0) {
+      throw new BadRequestException('Product not found');
+    }
+
+    const user = await this.dataSource.query(`SELECT id FROM users WHERE id = ? LIMIT 1`, [payload.userId]);
+    if (user.length === 0) {
+      throw new BadRequestException('User not found');
+    }
+
+    await this.dataSource.query(
+      `
+      INSERT INTO reviews (product_id, user_id, rating, title, comment, is_verified_purchase, helpful_count)
+      VALUES (?, ?, ?, ?, ?, 0, 0)
+      `,
+      [productId, payload.userId, rating, payload.title || null, comment],
+    );
+
+    const agg = await this.dataSource.query(
+      `SELECT COALESCE(AVG(rating), 0) AS avgRating, COUNT(*) AS totalReviews FROM reviews WHERE product_id = ?`,
+      [productId],
+    );
+
+    await this.dataSource.query(
+      `UPDATE products SET rating = ?, review_count = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+      [Number(agg[0].avgRating), Number(agg[0].totalReviews), productId],
+    );
+
+    return {
+      productId,
+      rating,
+      comment,
+      reviewCount: Number(agg[0].totalReviews),
+      averageRating: Number(agg[0].avgRating),
+    };
   }
 
   async register(payload: RegisterPayload) {

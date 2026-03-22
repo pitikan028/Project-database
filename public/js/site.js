@@ -1,6 +1,24 @@
 const API_BASE = window.location.port === '3000' ? '/api' : 'http://localhost:3000/api';
 const DEFAULT_DEMO_USER_ID = 1;
 
+function getQueryParam(name) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(name);
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function successMessage(text = 'Success') {
+  alert(text);
+}
+
 function getCurrentPage() {
   const path = window.location.pathname;
   const page = path.split('/').pop();
@@ -83,7 +101,40 @@ function renderProducts(products) {
           <div class="row"><strong>${product.name}</strong><span class="price">$${Number(product.price).toLocaleString()}</span></div>
           <p class="sub">${product.category || 'Vehicle'} | Stock: ${product.quantityInStock}</p>
           <div class="row">
-            <a class="btn" href="product-detail.html">View</a>
+            <a class="btn" href="product-detail.html?id=${product.id}">View</a>
+            <button class="btn btn-main" data-add-cart-id="${product.id}" type="button">+ Add to cart</button>
+          </div>
+        </div>
+      </article>
+      `,
+    )
+    .join('');
+
+  attachAddToCartHandlers(grid);
+}
+
+function renderHomeProducts(products) {
+  const grid = document.getElementById('home-product-grid');
+  if (!grid) {
+    return;
+  }
+
+  const topProducts = products.slice(0, 6);
+  if (!topProducts.length) {
+    grid.innerHTML = '<article class="card"><div class="card-body"><p class="sub">No products found.</p></div></article>';
+    return;
+  }
+
+  grid.innerHTML = topProducts
+    .map(
+      (product) => `
+      <article class="card">
+        <img src="${product.imageUrl || 'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1200&q=80'}" alt="${escapeHtml(product.name)}">
+        <div class="card-body">
+          <div class="row"><strong>${escapeHtml(product.name)}</strong><span class="price">$${Number(product.price).toLocaleString()}</span></div>
+          <p class="sub">${escapeHtml(product.category || 'Vehicle')} | Stock: ${Number(product.quantityInStock || 0)}</p>
+          <div class="row">
+            <a class="btn" href="product-detail.html?id=${product.id}">View</a>
             <button class="btn btn-main" data-add-cart-id="${product.id}" type="button">+ Add to cart</button>
           </div>
         </div>
@@ -104,8 +155,172 @@ async function loadProducts() {
   try {
     const products = await apiRequest('/products');
     renderProducts(products);
+    renderHomeProducts(products);
   } catch (error) {
     grid.innerHTML = '<article class="card"><div class="card-body"><p class="sub">Failed to load products from API.</p></div></article>';
+  }
+}
+
+function renderStars(score) {
+  const safe = Math.max(0, Math.min(5, Math.round(Number(score) || 0)));
+  return '★'.repeat(safe) + '☆'.repeat(5 - safe);
+}
+
+async function loadProductDetailPage() {
+  const nameEl = document.getElementById('detail-name');
+  if (!nameEl) {
+    return;
+  }
+
+  const productId = Number(getQueryParam('id') || 0);
+  if (!productId) {
+    nameEl.textContent = 'Product not found';
+    return;
+  }
+
+  try {
+    const product = await apiRequest(`/products/${productId}`);
+    const reviews = await apiRequest(`/products/${productId}/reviews`);
+
+    document.getElementById('detail-image').src = product.imageUrl || 'https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1200&q=80';
+    document.getElementById('detail-name').textContent = product.name;
+    document.getElementById('detail-description').textContent = product.description || 'No description';
+    document.getElementById('detail-price').textContent = `$${Number(product.price).toLocaleString()}`;
+    document.getElementById('detail-stars').textContent = renderStars(product.rating);
+    document.getElementById('detail-review-meta').textContent = `${Number(product.rating || 0).toFixed(1)} / 5 from ${Number(product.reviewCount || 0)} reviews`;
+    document.getElementById('detail-category').textContent = product.category || '-';
+    document.getElementById('detail-sku').textContent = product.sku || '-';
+    document.getElementById('detail-stock').textContent = String(product.quantityInStock ?? '-');
+    document.getElementById('detail-status').textContent = Number(product.quantityInStock || 0) > 0 ? 'Available' : 'Out of stock';
+
+    const addBtn = document.getElementById('detail-add-cart');
+    addBtn.setAttribute('data-add-cart-id', String(product.id));
+
+    const reviewBox = document.getElementById('detail-reviews');
+    if (!reviews.length) {
+      reviewBox.innerHTML = '<p class="sub">No reviews yet.</p>';
+    } else {
+      reviewBox.innerHTML = reviews
+        .slice(0, 5)
+        .map((r) => `<p class="sub">${escapeHtml(r.username)} (${renderStars(r.rating)}): ${escapeHtml(r.comment)}</p>`)
+        .join('');
+    }
+
+    const writeLink = document.getElementById('write-review-link');
+    writeLink.href = `review.html?productId=${product.id}`;
+
+    attachAddToCartHandlers(document);
+  } catch (error) {
+    nameEl.textContent = 'Failed to load product detail';
+  }
+}
+
+function buildStarPicker(selected) {
+  const picker = document.getElementById('star-picker');
+  if (!picker) {
+    return;
+  }
+
+  const current = Number(selected || 5);
+  picker.innerHTML = '';
+  for (let i = 1; i <= 5; i += 1) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = `star-btn ${i <= current ? 'active' : ''}`;
+    btn.textContent = '★';
+    btn.setAttribute('data-value', String(i));
+    picker.appendChild(btn);
+  }
+}
+
+async function loadReviewPage() {
+  const select = document.getElementById('review-product');
+  const submitBtn = document.getElementById('submit-review-btn');
+  if (!select || !submitBtn) {
+    return;
+  }
+
+  const products = await apiRequest('/products');
+  select.innerHTML = products
+    .map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`)
+    .join('');
+
+  const fromQuery = Number(getQueryParam('productId') || 0);
+  if (fromQuery) {
+    select.value = String(fromQuery);
+  }
+
+  let pickedRating = 5;
+  buildStarPicker(pickedRating);
+
+  const picker = document.getElementById('star-picker');
+  picker.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLButtonElement)) {
+      return;
+    }
+    const value = Number(target.getAttribute('data-value') || 5);
+    pickedRating = value;
+    buildStarPicker(pickedRating);
+  });
+
+  submitBtn.addEventListener('click', async () => {
+    const productId = Number(select.value);
+    const comment = document.getElementById('review-comment')?.value?.trim() || '';
+
+    if (!productId || !comment) {
+      alert('กรุณาเลือกสินค้าและกรอกข้อความรีวิว');
+      return;
+    }
+
+    try {
+      await apiRequest(`/products/${productId}/reviews`, {
+        method: 'POST',
+        body: JSON.stringify({
+          userId: getCurrentUserId(),
+          rating: pickedRating,
+          comment,
+        }),
+      });
+      successMessage('Review submitted successfully');
+      document.getElementById('review-comment').value = '';
+    } catch (error) {
+      alert('Submit review failed');
+    }
+  });
+}
+
+async function loadReviewsFeedPage() {
+  const box = document.getElementById('reviews-feed');
+  if (!box) {
+    return;
+  }
+
+  try {
+    const rows = await apiRequest('/reviews');
+    if (!rows.length) {
+      box.innerHTML = '<article class="card"><div class="card-body"><p class="sub">No feedback yet.</p></div></article>';
+      return;
+    }
+
+    box.innerHTML = rows
+      .map(
+        (item) => `
+        <article class="card">
+          <div class="card-body">
+            <div class="row">
+              <strong>${escapeHtml(item.productName)}</strong>
+              <span class="rating">${renderStars(item.rating)}</span>
+            </div>
+            <p class="sub" style="margin:8px 0;">by ${escapeHtml(item.username)}</p>
+            <p>${escapeHtml(item.comment)}</p>
+          </div>
+        </article>
+      `,
+      )
+      .join('');
+  } catch (error) {
+    box.innerHTML = '<article class="card"><div class="card-body"><p class="sub">Failed to load feedback.</p></div></article>';
   }
 }
 
@@ -256,7 +471,7 @@ function attachAddToCartHandlers(root = document) {
           body: JSON.stringify({ productId, quantity: 1 }),
         });
         await updateCartCounter();
-        alert('Added to cart');
+        successMessage('Add to cart success');
       } catch (error) {
         alert('Add to cart failed');
       }
@@ -269,6 +484,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   setActiveNav();
   await updateCartCounter();
   await loadProducts();
+  await loadProductDetailPage();
+  await loadReviewPage();
+  await loadReviewsFeedPage();
   await loadCartPage();
   await loadCheckoutSummary();
   attachAddToCartHandlers(document);

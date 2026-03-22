@@ -20,6 +20,29 @@ export class AppController {
     return this.appService.getProducts();
   }
 
+  @Get('products/:productId')
+  getProductById(@Param('productId', ParseIntPipe) productId: number) {
+    return this.appService.getProductById(productId);
+  }
+
+  @Get('products/:productId/reviews')
+  getProductReviews(@Param('productId', ParseIntPipe) productId: number) {
+    return this.appService.getProductReviews(productId);
+  }
+
+  @Post('products/:productId/reviews')
+  createProductReview(
+    @Param('productId', ParseIntPipe) productId: number,
+    @Body() body: { userId: number; rating: number; comment: string; title?: string },
+  ) {
+    return this.appService.createReview(productId, body);
+  }
+
+  @Get('reviews')
+  getReviewsFeed() {
+    return this.appService.getReviewsFeed();
+  }
+
   @Post('products')
   createProduct(
     @Body()

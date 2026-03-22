@@ -21,6 +21,7 @@
         <a data-nav href="cart.html">Cart (<span data-cart-count>0</span>)</a>
         <a data-nav href="checkout.html">Checkout</a>
         <a data-nav href="review.html">Review</a>
+        <a data-nav href="reviews-feed.html">Feedback</a>
       </nav>
     </div>
   </header>
@@ -31,9 +32,13 @@
       <section class="form-wrap">
         <h2 class="section-title">Write a Review</h2>
         <p class="sub">We value your feedback on our premium service.</p>
-        <p class="rating">★★★★★</p>
-        <textarea class="input" rows="6" placeholder="Share your experience..."></textarea>
-        <button class="btn btn-main" type="button">Submit Review</button>
+        <label class="sub" for="review-product">เลือกสินค้า</label>
+        <select id="review-product" class="input"></select>
+        <p class="sub" style="margin-bottom: 8px;">ให้คะแนน</p>
+        <div id="star-picker" class="star-picker" aria-label="rating"></div>
+        <textarea id="review-comment" class="input" rows="6" placeholder="เช่น เว็บใช้งานง่ายมาก รถตรงปก ราคาดีไม่แพง จัดส่งไว ไม่เสียหาย"></textarea>
+        <button id="submit-review-btn" class="btn btn-main" type="button">Submit Review</button>
+        <a class="btn" href="reviews-feed.html" style="margin-left: 8px;">อ่าน Feedback</a>
       </section>
 
       <section class="card">
